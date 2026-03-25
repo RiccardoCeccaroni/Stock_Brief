@@ -1,0 +1,14 @@
+# Environment and secrets
+.env
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Virtual environment
+venv/
+
+# IDE / OS
+.DS_Store
+.claude/
