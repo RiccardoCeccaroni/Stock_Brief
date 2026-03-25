@@ -14,7 +14,7 @@ load_dotenv()
 # ── Page config ──
 st.set_page_config(
     page_title="Stock Brief",
-    page_icon="",
+    page_icon="\U0001F4C8",
     layout="centered",
 )
 
