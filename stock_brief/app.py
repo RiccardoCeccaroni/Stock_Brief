@@ -21,40 +21,79 @@ st.set_page_config(
 # ── Custom styling ──
 st.markdown("""
 <style>
+    /* Force light background everywhere */
     .stApp, .stApp > header, [data-testid="stAppViewContainer"],
     [data-testid="stHeader"], [data-testid="stToolbar"],
     [data-testid="stSidebar"], [data-testid="stAppViewBlockContainer"],
     section[data-testid="stMain"], .main, .block-container {
-        background-color: #ffffff !important;
+        background-color: #f8f9fa !important;
+        color: #1a1a1a !important;
     }
     .stApp {
-        max-width: 800px;
+        max-width: 720px;
         margin: 0 auto;
     }
+    /* Title */
     .main-title {
-        font-size: 2.5rem !important;
-        font-weight: 900 !important;
+        font-size: 2.2rem !important;
+        font-weight: 700 !important;
         color: #1a1a1a !important;
         text-align: center !important;
-        margin-bottom: 0.3rem !important;
-        letter-spacing: -1px !important;
-        line-height: 1.1 !important;
+        margin-top: 1.5rem !important;
+        margin-bottom: 0.2rem !important;
+        letter-spacing: -0.5px !important;
     }
+    /* Subtitle */
     .subtitle {
-        font-size: 0.95rem;
-        color: #555555;
+        font-size: 0.9rem;
+        color: #666666;
         text-align: center;
-        margin-top: 0.6rem;
-        margin-bottom: 2.5rem;
-        line-height: 1.7;
+        margin-top: 0.4rem;
+        margin-bottom: 1.8rem;
+        line-height: 1.6;
     }
+    /* Ticker hint */
+    .ticker-hint {
+        font-size: 0.78rem;
+        color: #888888;
+        text-align: center;
+        margin-bottom: 1.5rem;
+        line-height: 1.5;
+    }
+    .ticker-hint code {
+        background-color: #e9ecef !important;
+        color: #333333 !important;
+        padding: 1px 5px;
+        border-radius: 3px;
+        font-size: 0.78rem;
+    }
+    /* Disclaimer */
     .disclaimer {
-        font-size: 0.75rem;
+        font-size: 0.72rem;
         color: #adb5bd;
         text-align: center;
-        margin-top: 2rem;
-        padding-top: 1rem;
-        border-top: 1px solid #e9ecef;
+        margin-top: 2.5rem;
+        padding-top: 0.8rem;
+        border-top: 1px solid #dee2e6;
+    }
+    /* Force light inputs */
+    .stTextInput input, .stSelectbox select, [data-testid="stTextInput"] input {
+        background-color: #ffffff !important;
+        color: #1a1a1a !important;
+    }
+    /* Button */
+    .stButton > button[kind="primary"] {
+        background-color: #2962FF !important;
+        border: none !important;
+        border-radius: 6px !important;
+        font-weight: 600 !important;
+        padding: 0.5rem 1rem !important;
+    }
+    /* Divider */
+    .section-divider {
+        border: none;
+        border-top: 1px solid #dee2e6;
+        margin: 1rem 0 1.5rem 0;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -63,34 +102,42 @@ st.markdown("""
 st.markdown('<p class="main-title">Stock Brief</p>', unsafe_allow_html=True)
 st.markdown(
     '<p class="subtitle">'
-    "A starting point for analysts: generate an AI-assisted research report (PDF &amp; Word) "
-    "that compiles key financials, competitor benchmarks, and market sentiment for any public company.<br><br>"
-    "<strong>Supported tickers:</strong> US-listed stocks (NYSE / NASDAQ) work best — e.g. <code>AAPL</code>, <code>MSFT</code>, <code>MCD</code>. "
-    "For foreign companies, use their <strong>US ADR ticker</strong> — e.g. <code>LVMUY</code> (LVMH), <code>NSRGY</code> (Nestle), <code>TSM</code> (TSMC). "
-    "Exchange-suffixed formats like <code>MC.PA</code> are not supported."
+    "Generate a structured company overview report (PDF &amp; Word) with financials, "
+    "competitor benchmarks, risk factors, and market sentiment."
     "</p>",
     unsafe_allow_html=True,
 )
 
 # ── Input form ──
-col1, col2 = st.columns([2, 1])
-with col1:
-    ticker = st.text_input(
-        "Stock Ticker (Yahoo Finance format)",
-        placeholder="e.g. AAPL, MSFT, MCD, LVMUY",
-        max_chars=10,
-    ).upper().strip()
+ticker = st.text_input(
+    "Stock Ticker",
+    placeholder="e.g. AAPL, NVDA, MCD",
+    max_chars=10,
+).upper().strip()
 
-with col2:
+col1, col2 = st.columns(2)
+with col1:
     period = st.selectbox(
         "Chart Period",
         options=["3y", "5y", "10y"],
         index=1,
     )
-
-num_peers = st.slider("Number of competitors to compare", min_value=2, max_value=5, value=3)
+with col2:
+    num_peers = st.selectbox(
+        "Competitors",
+        options=[2, 3, 4, 5],
+        index=1,
+    )
 
 generate = st.button("Generate Report", type="primary", use_container_width=True)
+
+st.markdown(
+    '<p class="ticker-hint">'
+    "US-listed stocks work best — <code>AAPL</code>, <code>MSFT</code>, <code>NVDA</code>. "
+    "For foreign companies use the ADR ticker — <code>LVMUY</code>, <code>TSM</code>, <code>NSRGY</code>."
+    "</p>",
+    unsafe_allow_html=True,
+)
 
 # ── Report generation ──
 if generate:
@@ -315,7 +362,7 @@ st.markdown(
     '<p class="disclaimer">'
     "This tool generates factual reports using public financial data. "
     "It does not provide investment advice or recommendations. "
-    "Data sources: Financial Modeling Prep, Yahoo Finance. AI: OpenAI."
+    "Data sources: Financial Modeling Prep, Yahoo Finance. AI: OpenAI, Perplexity."
     "</p>",
     unsafe_allow_html=True,
 )
