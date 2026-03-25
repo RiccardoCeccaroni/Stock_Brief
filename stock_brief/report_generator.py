@@ -42,6 +42,24 @@ def _sanitize_text(text: str) -> str:
     return text.encode('latin-1', errors='ignore').decode('latin-1')
 
 
+def _normalize_markdown(text: str) -> str:
+    """Convert markdown headings (### Foo) to bold (**Foo**) so renderers can handle them."""
+    import re
+    lines = text.split("\n")
+    result = []
+    for line in lines:
+        m = re.match(r'^(#{1,6})\s+(.*)', line)
+        if m:
+            heading_text = m.group(2).strip()
+            # Don't double-wrap if already bold
+            if not heading_text.startswith("**"):
+                heading_text = f"**{heading_text}**"
+            result.append(heading_text)
+        else:
+            result.append(line)
+    return "\n".join(result)
+
+
 def _write_markdown(pdf, line_height: float, text: str, font_size: int):
     """Write text with **bold** markdown rendered inline. Uses pdf.write() so
     bold and regular segments flow together with automatic line wrapping."""
@@ -172,9 +190,9 @@ def generate_report(
     """Generate PDF report and return the file path."""
 
     description = _sanitize_text(description)
-    business_model_section = _sanitize_text(business_model_section)
+    business_model_section = _normalize_markdown(_sanitize_text(business_model_section))
     sentiment_summary = _sanitize_text(sentiment_summary)
-    risk_section = _sanitize_text(risk_section)
+    risk_section = _normalize_markdown(_sanitize_text(risk_section))
 
     company_name = profile.get("companyName", ticker)
     pdf = ReportPDF(company_name, ticker)

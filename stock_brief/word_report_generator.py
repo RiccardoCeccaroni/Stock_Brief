@@ -4,6 +4,7 @@ Generates a Word (.docx) investment research report using python-docx.
 """
 
 import os
+import re
 import tempfile
 from datetime import datetime
 
@@ -13,6 +14,22 @@ from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.enum.table import WD_TABLE_ALIGNMENT
 
 from report_generator import _fmt_number
+
+
+def _normalize_markdown(text: str) -> str:
+    """Convert markdown headings (### Foo) to bold (**Foo**)."""
+    lines = text.split("\n")
+    result = []
+    for line in lines:
+        m = re.match(r'^(#{1,6})\s+(.*)', line)
+        if m:
+            heading_text = m.group(2).strip()
+            if not heading_text.startswith("**"):
+                heading_text = f"**{heading_text}**"
+            result.append(heading_text)
+        else:
+            result.append(line)
+    return "\n".join(result)
 
 
 def _add_section_heading(doc, text):
@@ -132,6 +149,7 @@ def generate_word_report(
 
     # ── SECTION 2: BUSINESS MODEL & REVENUE BREAKDOWN ──
     _add_section_heading(doc, "2. Business Model & Revenue Breakdown")
+    business_model_section = _normalize_markdown(business_model_section)
 
     for paragraph in business_model_section.split("\n\n"):
         paragraph = paragraph.strip()
@@ -285,6 +303,7 @@ def generate_word_report(
     # ── SECTION 7: KEY RISKS ──
     if risk_section:
         _add_section_heading(doc, "7. Key Risks")
+        risk_section = _normalize_markdown(risk_section)
         for paragraph in risk_section.split("\n\n"):
             paragraph = paragraph.strip()
             if not paragraph:
