@@ -1,0 +1,16 @@
+name: Keep Streamlit Apps Alive
+
+on:
+  schedule:
+    - cron: '*/20 * * * *'  # Every 20 minutes
+  workflow_dispatch:  # Manual trigger
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping StockBrief
+        run: curl -s -o /dev/null -w "%{http_code}" https://stockbrief.streamlit.app/
+
+      - name: Ping Real Estate Dashboard
+        run: curl -s -o /dev/null -w "%{http_code}" https://italian-re-dashboard.streamlit.app/
