@@ -15,7 +15,8 @@ load_dotenv()
 st.set_page_config(
     page_title="Stock Brief",
     page_icon="\U0001F4C8",
-    layout="centered",
+    layout="wide",
+    initial_sidebar_state="collapsed",
 )
 
 # ── Custom styling ──
@@ -29,9 +30,18 @@ st.markdown("""
         background-color: #f8f9fa !important;
         color: #1a1a1a !important;
     }
-    .stApp {
-        max-width: 720px;
-        margin: 0 auto;
+    /* Hide sidebar and its toggle button completely */
+    [data-testid="stSidebar"],
+    [data-testid="collapsedControl"],
+    [data-testid="stSidebarCollapsedControl"] {
+        display: none !important;
+    }
+    /* Center content with comfortable max-width */
+    .block-container {
+        max-width: 820px !important;
+        padding-left: 2rem !important;
+        padding-right: 2rem !important;
+        margin: 0 auto !important;
     }
     /* Title */
     .main-title {
